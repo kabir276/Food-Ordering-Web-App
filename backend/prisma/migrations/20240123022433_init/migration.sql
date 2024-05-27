@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "otp" ALTER COLUMN "phonenumber" SET DATA TYPE DOUBLE PRECISION;

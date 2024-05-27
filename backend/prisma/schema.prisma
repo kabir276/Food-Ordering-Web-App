@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  phonenumber Float     @unique
+  orders      Order[]
+  cart        Cart[]
+  role        Role
+  addresses   Address[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  userId          Int
+  status          OrderStatus
+  totalAmount     Float
+  productName     String
+  shippingAddress String
+  createdAt       DateTime    @default(now())
+  user            User        @relation(fields: [userId], references: [id])
+}
+
+enum OrderStatus {
+  Pending
+  InProgress
+  Dispached
+  Delivered
+  canceled
+}
+
+model Address {
+  id          Int     @id @default(autoincrement())
+  userId      Int
+  street      String
+  housenumber String
+  postalcode  Int
+  city        String
+  country     country
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  admin
+  user
+}
+
+model Otp {
+  id          Int      @id @default(autoincrement())
+  phonenumber Float    @unique
+  code        Int      @unique
+  createdAt   DateTime @default(now())
+}
+
+model MenuItem {
+ id Int @id @default(autoincrement())
+  item        String
+  category    String?
+  description String?
+  price       Float
+  imageLink   String?
+  carts       Cart[]
+}
+
+model Cart {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  menuItemId Int
+  quantity   Int
+  user       User     @relation(fields: [userId], references: [id])
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+enum country {
+  india
+}
