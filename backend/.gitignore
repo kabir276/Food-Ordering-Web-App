@@ -1,4 +1,6 @@
 dist
 node_modules
 .env
+# local env files
+.env*.local
 RollupFoodApp.pem
