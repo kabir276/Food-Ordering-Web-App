@@ -8,7 +8,7 @@ import orderRouter from "./routes/orders";
 import addressRouter from "./routes/address";
 import menuRouter from "./routes/menu";
 import dotenv from 'dotenv';
-import serverless from 'serverless-http';
+
 
 dotenv.config();
 
@@ -35,4 +35,3 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-module.exports.handler = serverless(app);
