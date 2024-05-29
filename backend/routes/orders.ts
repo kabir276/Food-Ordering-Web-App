@@ -1,5 +1,5 @@
 import express, { Response, Request } from "express";
-import z, { number } from "zod";
+import z, { any, number } from "zod";
 import { PrismaClient } from '@prisma/client';
 import dotenv from "dotenv";
 import { authenticateJwt } from "../middleware/Auth";
@@ -35,7 +35,8 @@ router.post("/", authenticateJwt, async (req: Request, res: Response) => {
 
         })
         const shippingAddress = `${address?.street}, ${address?.housenumber}, ${address?.postalcode}, ${address?.city}`
-        const totalPrice = cartItems.reduce((acc, item) => acc + item.menuItem.price * item.quantity, 0);
+        const totalPrice = cartItems.reduce((acc:number, item:any) => acc + item.menuItem.price * item.quantity, 0);
+        //@ts-ignore
         const productNames: string = cartItems.map(item => item.menuItem.item).join(", ")
         // Create an order
         const newOrder = await prisma.order.create({

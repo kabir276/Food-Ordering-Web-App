@@ -6,17 +6,29 @@ on:
       - master 
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build-and-push:
+   runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+     - name: Checkout source
+       uses: actions/checkout@v3
 
-    - name: SSH and deploy
-      env:
+     - name: Login to Docker Hub
+       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+     - name: Change directory to backend
+       run: cd backend
+
+     - name: Build Docker image
+       run: docker build -t kabir18/rollup .
+
+     - name: Publish image to Docker Hub
+       run: docker push kabir18/rollup:latest
+ 
+     - name: SSH and deploy
+       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
+       run: |
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
-        ssh -o StrictHostKeyChecking=no -v -t -i keyfile ubuntu@ec2-52-90-2-186.compute-1.amazonaws.com "sudo bash ~/deploy.sh"
+        ssh -o StrictHostKeyChecking=no -v -t -i keyfile ubuntu@ec2-52-90-2-186.compute-1.amazonaws.com "sudo bash ~/docker.sh"

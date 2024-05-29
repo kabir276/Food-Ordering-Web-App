@@ -1,0 +1,27 @@
+FROM node:18
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY tsconfig.json ./
+RUN npm install
+RUN npm i -g typescript
+RUN npm i -g pm2
+
+ENV SECRET=32156487kabirhelloofuasshole
+ENV DATABASE_URL=postgres://koyeb-adm:roh5Npe2tsAv@ep-lingering-mud-a4flqj38.us-east-1.pg.koyeb.app/koyebdb
+ENV twiliono=+19287233400
+ENV YOUR_TWILIO_ACCOUNT_SID=ACb90bf4670f6dd263bdd119174db2ccb7
+ENV YOUR_TWILIO_AUTH_TOKEN=22cdc9ea729b3ab68a3c692460cced2e
+
+
+COPY . .
+
+
+RUN npm run build
+
+
+
+CMD ["npm", "start"]
+
+EXPOSE 3000
