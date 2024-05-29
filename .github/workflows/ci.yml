@@ -28,4 +28,4 @@ jobs:
        run: |
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
-        ssh -o StrictHostKeyChecking=no -v -t -i keyfile ubuntu@ec2-52-90-2-186.compute-1.amazonaws.com "sudo bash ~/docker.sh"
+        ssh -o StrictHostKeyChecking=no -v -t -i keyfile ubuntu@ec2-52-90-2-186.compute-1.amazonaws.com "sudo bash ~/deploy.sh"
