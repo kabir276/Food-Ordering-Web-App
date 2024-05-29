@@ -18,14 +18,6 @@ jobs:
 
      - name: Build Docker image
        run: docker build -t kabir18/rollup ./backend
-     - name: setting up env variables
-       run: |
-         docker run -e SECRET=${{ secrets.SECRET }} \
-                     -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-                     -e twiliono=${{ secrets.twiliono }} \
-                     -e YOUR_TWILIO_ACCOUNT_SID=${{ secrets.YOUR_TWILIO_ACCOUNT_SID }} \
-                     -e YOUR_TWILIO_AUTH_TOKEN=${{ secrets.YOUR_TWILIO_AUTH_TOKEN }} \
-                     kabir18/rollup:latest
 
      - name: Publish image to Docker Hub
        run: docker push kabir18/rollup:latest
