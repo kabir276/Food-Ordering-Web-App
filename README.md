@@ -54,7 +54,7 @@ Clone the repository:
 
 sh
 Copy code
-git clone https://github.com/your-username/food-app.git
+git clone https://github.com/kabir276/rollup.git
 cd food-app
 Install dependencies for both frontend and backend:
 
