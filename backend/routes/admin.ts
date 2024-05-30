@@ -3,6 +3,7 @@ import z from "zod";
 import { PrismaClient } from '@prisma/client';
 import twilio from "twilio";
 import dotenv from "dotenv";
+import sendMail from "../utils/emaillogic";
 dotenv.config();
 const prisma = new PrismaClient();
 const accountSid = process.env.YOUR_TWILIO_ACCOUNT_SID;
@@ -12,26 +13,37 @@ const twilioClient = twilio(accountSid, authToken);
 
 
 
-const generateAndSendOtp = async (phoneNumber: number) => {
+const generateAndSendOtp = async (email: string,username:string) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    await prisma.otp.create({
-        data: {
-            phonenumber: phoneNumber,
-            code: otp,
+    const savedOtp = await prisma.otp.findFirst({
+        where: {
+            email: email,
+
         },
     });
-
-    const twilioResponse = await twilioClient.messages.create({
-        body: `Your signin OTP is: ${otp}`,
-        to: `+91 ${phoneNumber}`,
-        from: twilioNumber,
-    });
-
-    if (twilioResponse.errorCode) {
-        console.error(`Twilio error: ${twilioResponse.errorMessage}`);
-        throw new Error("Twilio error");
+    if (savedOtp) {
+        prisma.otp.update({
+            where: {
+                email: email
+            },
+            data: {
+                code: otp,
+            }
+        })
+    } else {
+        await prisma.otp.create({
+            data: {
+                email: email,
+                code: otp,
+            },
+        });
     }
+    sendMail(email, username, otp)
+
+    
+
+   
 };
 
 const disconnectPrisma = async () => {
@@ -46,9 +58,9 @@ const router = express.Router();
 
 router.post("/signup", async (req: Request, res: Response) => {
     try {
-        const { username, phoneNumber } = req.body;
+        const { username, email } = req.body;
 
-        const existingUser = await prisma.user.findUnique({ where: { phonenumber: phoneNumber } });
+        const existingUser = await prisma.user.findUnique({ where: { email: email } });
         if (existingUser) {
             throw new Error("admin with this phone number already exists");
         }
@@ -56,12 +68,12 @@ router.post("/signup", async (req: Request, res: Response) => {
         await prisma.user.create({
             data: {
                 name: username,
-                phonenumber: phoneNumber,
+                email: email,
                 role: "admin",
             },
         });
 
-        await generateAndSendOtp(phoneNumber);
+        await generateAndSendOtp(email,username);
         res.json({ message: 'User registered successfully' });
     } catch (e) {
         console.error(e);

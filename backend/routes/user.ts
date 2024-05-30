@@ -6,6 +6,7 @@ import twilio from "twilio";
 import dotenv from "dotenv";
 import menuRouter from "./menu";
 import { authenticateJwt } from "../middleware/Auth";
+import sendMail from "../utils/emaillogic";
 
 const app: Application = express();
 app.use("/menu", menuRouter)
@@ -19,26 +20,32 @@ const twilioClient = twilio(accountSid, authToken);
 
 
 
-const generateAndSendOtp = async (phoneNumber: number) => {
+const generateAndSendOtp = async (email: string, username: string) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
+    const savedOtp = await prisma.otp.findFirst({
+        where: {
+            email: email,
 
-    await prisma.otp.create({
-        data: {
-            phonenumber: phoneNumber,
-            code: otp,
         },
     });
-
-    const twilioResponse = await twilioClient.messages.create({
-        body: `Your signin OTP is: ${otp}`,
-        to: `+91 ${phoneNumber}`,
-        from: twilioNumber,
-    });
-
-    if (twilioResponse.errorCode) {
-        console.error(`Twilio error: ${twilioResponse.errorMessage}`);
-        throw new Error("Twilio error");
+    if (savedOtp) {
+        prisma.otp.update({
+            where: {
+                email: email
+            },
+            data: {
+                code: otp,
+            }
+        })
+    } else {
+        await prisma.otp.create({
+            data: {
+                email: email,
+                code: otp,
+            },
+        });
     }
+    sendMail(email, username, otp)
 };
 
 const disconnectPrisma = async () => {
@@ -53,22 +60,23 @@ const router = express.Router();
 
 router.post("/signup", async (req: Request, res: Response) => {
     try {
-        const { username, phoneNumber } = req.body;
+        const { username, email } = req.body;
 
-        const existingUser = await prisma.user.findUnique({ where: { phonenumber: phoneNumber } });
+        const existingUser = await prisma.user.findUnique({ where: { email: email } });
         if (existingUser) {
             throw new Error("User with this phone number already exists");
         }
 
+
         await prisma.user.create({
             data: {
                 name: username,
-                phonenumber: phoneNumber,
+                email: email,
                 role: "user",
             },
         });
 
-        await generateAndSendOtp(phoneNumber);
+        await generateAndSendOtp(email, username);
         res.status(201).json({ message: 'User registered successfully' });
     } catch (e) {
         console.error(e);
@@ -80,10 +88,10 @@ router.post("/signup", async (req: Request, res: Response) => {
 
 router.post("/signin", async (req: Request, res: Response) => {
     try {
-        const { phoneNumber } = req.body;
+        const { email } = req.body;
         const savedOtp = await prisma.otp.findFirst({
             where: {
-                phonenumber: phoneNumber,
+                email: email,
 
             },
         });
@@ -94,13 +102,13 @@ router.post("/signin", async (req: Request, res: Response) => {
                 },
             });
         }
-        console.log(phoneNumber)
-        const user = await prisma.user.findUnique({ where: { phonenumber: phoneNumber } });
+        console.log(email)
+        const user = await prisma.user.findUnique({ where: { email: email } });
         if (!user) {
             throw new Error("No user Found, please sign up");
         }
 
-        await generateAndSendOtp(phoneNumber);
+        await generateAndSendOtp(email, user.name);
         res.status(201).json({ message: 'OTP sent successfully' });
     } catch (e) {
         console.error(e);
@@ -110,30 +118,15 @@ router.post("/signin", async (req: Request, res: Response) => {
     }
 });
 router.put("/resnd-otp", async (req: Request, res: Response) => {
-    const { phoneNumber } = req.body;
-
     try {
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        prisma.otp.update({
-            where: {
-                phonenumber: phoneNumber
-            },
-            data: {
-                code: otp,
-            }
-        })
-        const twilioResponse = await twilioClient.messages.create({
-            body: `Your signin OTP is: ${otp}`,
-            to: `+91 ${phoneNumber}`,
-            from: twilioNumber,
-        });
 
-        if (twilioResponse.errorCode) {
-            console.error(`Twilio error: ${twilioResponse.errorMessage}`);
-            throw new Error("Twilio error");
+        const { email } = req.body;
+        const user = await prisma.user.findUnique({ where: { email: email } });
+        if (!user) {
+            throw new Error("No user Found, please sign up");
         }
-        res.status(201).json({ msg: "otp sent success" })
-
+        const Otpsent = await generateAndSendOtp(email, user.name)
+        return Otpsent
 
     } catch (e) {
 
@@ -147,11 +140,11 @@ router.post("/verify-otp", async (req: Request, res: Response) => {
     try {
 
         console.log(req.body);
-        const { phoneNumber, otp } = req.body;
-        console.log(phoneNumber, otp);
+        const { email, otp } = req.body;
+        console.log(email, otp);
         const savedOtp = await prisma.otp.findFirst({
             where: {
-                phonenumber: phoneNumber,
+                email: email,
                 code: otp,
             },
         });
@@ -159,7 +152,7 @@ router.post("/verify-otp", async (req: Request, res: Response) => {
         if (savedOtp) {
             const user = await prisma.user.findUnique({
                 where: {
-                    phonenumber: phoneNumber,
+                    email: email,
                 },
             });
 

@@ -10,7 +10,7 @@ datasource db {
 model User {
   id          Int       @id @default(autoincrement())
   name        String    @unique
-  phonenumber Float     @unique
+  email       String    @unique
   orders      Order[]
   cart        Cart[]
   role        Role
@@ -54,7 +54,7 @@ enum Role {
 
 model Otp {
   id          Int      @id @default(autoincrement())
-  phonenumber Float    @unique
+  email       String    @unique
   code        Int      @unique
   createdAt   DateTime @default(now())
 }
