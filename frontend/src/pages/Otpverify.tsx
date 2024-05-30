@@ -1,6 +1,6 @@
 import { signin, signup, verifyOtp } from '@/APIcalls/usercalls';
 import { userState } from '@/store/atoms/user';
-import { usernumberState } from '@/store/selectors/userNumber';
+import { useremailState } from '@/store/selectors/userNumber';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -8,19 +8,17 @@ import { useRecoilValue } from 'recoil';
 import 'react-toastify/dist/ReactToastify.css';
 const Otpverify = () => {
     const router= useRouter()
-	const userNumber=useRecoilValue(usernumberState)
+	const userEmail=useRecoilValue(useremailState)
 	const [otp, setotp] = useState<number>();
 
 	const verifyotp = async (e: any) => {
 		e.preventDefault();
-		const phoneNumber = userNumber;
-		console.log(phoneNumber);
+		const email = userEmail;
 		try {
-			await verifyOtp(Number(phoneNumber), Number(otp));
+			await verifyOtp(String(email), Number(otp));
 			
 			router.push("/");
 		} catch (error:any) {
-			console.error('Error:', error.message || error);
 			// Handle the error, e.g., show an error toast
 			toast.error("Failed to verify OTP. Please try again.");
 		}

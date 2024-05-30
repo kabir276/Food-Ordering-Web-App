@@ -5,7 +5,7 @@ interface userDetails {
   order: []|null,
   addresses:[]|null,
   name:string,
-  phonenumber:number,
+  email:string,
   cart:[]|null
 }
 export const userDetailsState=atom<{isLoading: boolean, userData: null | userDetails}>({

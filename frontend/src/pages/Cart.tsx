@@ -1,5 +1,5 @@
 import { addItem, updateCart, getCart, deleteCart } from "@/APIcalls/cartCalls";
-import { memo, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, memo } from "react";
 import { useRouter } from "next/router";
 import AddressManager from "../components/addresses";
 import { placeOrder } from "@/APIcalls/orderCall";
@@ -14,6 +14,7 @@ export interface Menu {
   category: string;
   price: number;
 }
+
 export interface Cart {
   id: number;
   userId: number;
@@ -21,6 +22,7 @@ export interface Cart {
   quantity: number;
   menuItem: Menu;
 }
+
 function Cart() {
   const [active, setActive] = useState(1);
   const [cart, setCart] = useState<Cart[]>([]);
@@ -38,7 +40,6 @@ function Cart() {
         calculateTotalAmount(cartData);
         setIsLoading(false);
       } catch (err) {
-
         setIsLoading(false);
       }
     };
@@ -67,23 +68,23 @@ function Cart() {
     [router]
   );
 
-  const calculateTotalAmount = useCallback(
-    (cart: Cart[]) => {
-      const total = cart.reduce((acc, item) => acc + item.menuItem.price * item.quantity, 0);
-      setTotalAmount(total);
-    },
-    []
-  );
+  const calculateTotalAmount = useCallback((cart: Cart[]) => {
+    const total = cart.reduce((acc, item) => acc + item.menuItem.price * item.quantity, 0);
+    setTotalAmount(total);
+  }, []);
 
   const updateTotalAmount = useCallback(
     (cartId: number, newQuantity: number) => {
       setCart((currentCart) => {
-        const updatedCart = currentCart.map((item) => {
-          if (item.id === cartId) {
-            return { ...item, quantity: newQuantity };
-          }
-          return item;
-        });
+        const updatedCart = currentCart
+          .map((item) => {
+            if (item.id === cartId) {
+              return { ...item, quantity: newQuantity };
+            }
+            return item;
+          })
+          .filter((item) => item.quantity > 0); // Filter out items with 0 quantity
+
         calculateTotalAmount(updatedCart);
         return updatedCart;
       });
@@ -100,20 +101,20 @@ function Cart() {
         ) : (
           <div className={"flex mb-4 p-5"}>
             {cart.length === 0 || totalAmount === 0 ? (
-
               <>
-              <img src="/mealimg.png" alt="Logo" />
-              <p className="text-7xl text-white text-center m-auto">
-                Cart is empty!{" "}
-                <a
-                  href=""
-                  onClick={() => {
-                    router.push("/Menu");
-                  }}
-                >
-                  Add Items to Cart
-                </a>
-              </p></>
+                <img src="/mealimg.png" alt="Logo" />
+                <p className="text-7xl text-white text-center m-auto">
+                  Cart is empty!{" "}
+                  <a
+                    href=""
+                    onClick={() => {
+                      router.push("/Menu");
+                    }}
+                  >
+                    Add Items to Cart
+                  </a>
+                </p>
+              </>
             ) : (
               <div className="flex md:flex-row-reverse flex-col md:justify-between justify-between gap-20 m-auto w-full ">
                 <div className="pt-24 md:pt-0 ">
@@ -187,6 +188,7 @@ export const CartItems = memo(
             onQuantityChange(cartId, newQuantity);
           } else {
             await deleteCart(cartId);
+            onQuantityChange(cartId, newQuantity);
             setQuantity(1);
           }
         } catch (err) {
@@ -214,10 +216,10 @@ export const CartItems = memo(
                 -
               </button>
               <span className="text-[gray] text-xl p-2 m-auto">{quantity}</span>
-              <button className="w-full pl-2 pr-2 h-[auto] text-center text-sm m-auto text-[#000000f6] " onClick={increase}>
+              <button className="w-full pl-2 pr-2 h-[auto] text-center text-sm m-auto text-[#000000f6]" onClick={increase}>
                 +
               </button>
-              <p className="text-xs font-bold mb-2 text-[#ffeea5] ml-2 mt-2 ">Rs.{totalPrice.toFixed(2)}</p>
+              <p className="text-xs font-bold mb-2 text-[#ffeea5] ml-2 mt-2">Rs.{totalPrice.toFixed(2)}</p>
             </div>
           </div>
         </div>

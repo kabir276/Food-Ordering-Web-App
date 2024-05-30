@@ -20,7 +20,6 @@ export const getMenu = async () => {
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error:any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 
@@ -39,7 +38,6 @@ export const getMenuItem = async (menuItemId:number) => {
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error:any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 

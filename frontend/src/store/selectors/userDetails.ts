@@ -30,12 +30,12 @@ export const usernameState = selector({
         return "";
     },
 });
-export const userphonenumberState = selector({
-    key: 'userphonenumberState',
+export const useremailState = selector({
+    key: 'useremailState',
     get: ({ get }) => {
         const state = get(userDetailsState);
         if (state.userData) {
-            return state.userData.phonenumber;
+            return state.userData.email;
         }
         return "";
     },

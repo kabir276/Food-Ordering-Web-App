@@ -8,19 +8,19 @@ import { useSetRecoilState } from 'recoil';
 const AuthCard = () => {
 	const router = useRouter()
 	const setUser = useSetRecoilState(userState);
-	const [phoneNumber, setPhoneNumber] = useState<number>(0);
+	const [email, setEmail] = useState<string>("");
 	const [username, setusername] = useState<string>("");
 	
 	const handleLogin =  (e: any) => {
 		e.preventDefault(); // Prevent the default form submission behavior
 	  
-		signin(phoneNumber,setUser)
+		signin(email,setUser)
 	  };
 	  
 	
 	const handlesignup = (e: any) => {
 		e.preventDefault(); 
-		signup(username, phoneNumber,setUser);
+		signup(username, email,setUser);
 	
 	};
 	return (
@@ -53,11 +53,11 @@ const AuthCard = () => {
 
 							<input
 								onChange={(e) => {
-									setPhoneNumber(Number(e.target.value));
+									setEmail(e.target.value);
 								}}
-								type="tel"
-								name="phone"
-								placeholder="Phone number"
+								type="email"
+								name="Email"
+								placeholder="Enter your Email"
 								required={true}
 							/>
 							<button type='submit' style={{ background: "#f7db3d" }}>signup</button>
@@ -70,12 +70,12 @@ const AuthCard = () => {
 							</label>
 							<input
 								onChange={(e) => {
-									setPhoneNumber(Number(e.target.value));
+									setEmail(e.target.value);
 								}}
 								style={{background:"#fdf1ae"}}
-								type="number"
-								name="phone"
-								placeholder="Phone number"
+								type="email"
+								name="email"
+								placeholder="Enter your Email"
 								required={true}
 							/>
 

@@ -16,12 +16,12 @@ export const useUserRecoilState = () => {
 
     return { setUser, setUserDetails };
 };
-export const signup = async (username: string, phoneNumber: number, setUser: Function) => {
+export const signup = async (username: string, email: string, setUser: Function) => {
     try {
-        console.log(username, phoneNumber)
+        
 
         const res = await axios.post(`${BASEURL}/user/signup`, {
-            username, phoneNumber
+            username, email
         }, {
             headers: {
                 "Content-type": "application/json"
@@ -30,9 +30,8 @@ export const signup = async (username: string, phoneNumber: number, setUser: Fun
         if (res.status === 201) {
             setUser({
                 isLoading: false,
-                userNumber: phoneNumber
+                userEmail: email
             })
-            console.log(res.data.message)
             toast.success(res.data.message)
             router.push("/Otpverify");
 
@@ -42,15 +41,14 @@ export const signup = async (username: string, phoneNumber: number, setUser: Fun
 
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 
 }
-export const verifyOtp = async ( phoneNumber: number,otp: number,) => {
+export const verifyOtp = async ( email: string,otp: number,) => {
     try {
         const res = await axios.post(`${BASEURL}/user/verify-otp`, {
-            phoneNumber: phoneNumber,
+            email: email,
             otp: otp
         }, {
             headers: {
@@ -68,14 +66,13 @@ export const verifyOtp = async ( phoneNumber: number,otp: number,) => {
         }
     } catch (error: any) {
         toast.error("Unexpected error occurred")
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
-export const resendOtp = async (phoneNumber: number) => {
+export const resendOtp = async (email: string) => {
     try {
         const res = await axios.post(`${BASEURL}/user/resnd-otp`, {
-            phoneNumber,
+            email,
         }, {
             headers: {
                 "Content-type": "application/json"
@@ -92,15 +89,14 @@ export const resendOtp = async (phoneNumber: number) => {
         }
     } catch (error: any) {
         toast.error("Unexpected error occurred")
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
-export const signin = async (phonenumber: number, setUser: Function) => {
+export const signin = async (email: string, setUser: Function) => {
     try {
 
         const res = await axios.post(`${BASEURL}/user/signin`, {
-            phoneNumber: phonenumber
+            email: email
         }, {
             headers: {
                 "Content-type": "application/json"
@@ -109,9 +105,8 @@ export const signin = async (phonenumber: number, setUser: Function) => {
         if (res.status === 201) {
             setUser({
                 isLoading: false,
-                userNumber: phonenumber
+                userEmail: email
             })
-            console.log(res.data.message)
             toast.success(res.data.message)
             router.push("/Otpverify");
 
@@ -121,7 +116,6 @@ export const signin = async (phonenumber: number, setUser: Function) => {
         }
     }
     catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 }
@@ -148,7 +142,6 @@ export const setuserdata = async (setUserDetails: Function) => {
     catch (error: any) {
         toast.error('Invalid input or unexpected error')
 
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 }

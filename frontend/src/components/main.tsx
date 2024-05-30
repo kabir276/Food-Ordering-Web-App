@@ -1,5 +1,3 @@
-import { userState } from '@/store/atoms/user';
-import { usernumberState } from '@/store/selectors/userNumber';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { toast } from 'react-toastify';

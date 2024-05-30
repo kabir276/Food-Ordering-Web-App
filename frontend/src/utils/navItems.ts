@@ -20,13 +20,7 @@ export const navItems = [
         title: "About US",
         // icon: clipboard,
         link: "/About-us",
-    },
-    {
-        id: 4,
-        title: "Blogs",
-        // icon: trend,
-        link: "/Blogs",
-    },
+    }
     
    
 ]

@@ -22,7 +22,7 @@ export const addAddress = async (street: string, housenumber: string,postalcode:
     try {
         const inputCheck = addressSchema.parse({ street, housenumber,postalcode,city });
 
-        console.log('Valid input:', inputCheck);
+       
 
         const res = await axios.post(
             `${baseURL}/user/address`,
@@ -46,7 +46,6 @@ export const addAddress = async (street: string, housenumber: string,postalcode:
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
@@ -54,7 +53,7 @@ export const updateAddress = async (addressID:number,street: string, housenumber
     try {
         const inputCheck = addressSchema.parse({ street, housenumber,postalcode,city });
 
-        console.log('Valid input:', inputCheck);
+        
 
         const res = await axios.put(
             `${baseURL}/user/address/${addressID}`,
@@ -78,7 +77,6 @@ export const updateAddress = async (addressID:number,street: string, housenumber
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
@@ -105,7 +103,6 @@ export const getAddress = async (addressID:number) => {
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
@@ -133,7 +130,6 @@ export const getAddresses = async () => {
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };
@@ -157,7 +153,6 @@ export const deleteAddress = async (addressID:number) => {
             return res.data.error || 'Unexpected error occurred';
         }
     } catch (error: any) {
-        console.error('Error:', error.message || error);
         throw new Error('Invalid input or unexpected error');
     }
 };

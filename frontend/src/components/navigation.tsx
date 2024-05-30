@@ -27,7 +27,6 @@ function Navigation({ active, setActive }: { active: number, setActive: Function
     }
     useEffect(() => {
         const token = getToken()
-        console.log(isUserLoggedIn)
         setisUserLoggedin(token)
     })
     return (
