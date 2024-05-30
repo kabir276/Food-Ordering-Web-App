@@ -6,7 +6,7 @@ export const SECRET = process.env.SECRET;
 export const authenticateJwt = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
-    const token = authHeader.split(' ')[1];
+    const token = authHeader;
     jwt.verify(token, SECRET as string , (err,user) => {
       if (err) {
         return res.sendStatus(403);
