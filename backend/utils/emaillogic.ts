@@ -1,51 +1,54 @@
-import  nodemailer from 'nodemailer';
-import Mailgen from 'mailgen'
+import nodemailer from 'nodemailer';
+import Mailgen from 'mailgen';
+import dotenv from "dotenv";
+dotenv.config();
 
-let nodeConfig = {
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, 
+const transporter = nodemailer.createTransport({
+    service:"gmail",
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure:false,
     auth: {
-        user: process.env.EMAIL, 
-        pass: process.env.PASSWORD,
+        user: process.env.EMAIL,
+        pass: process.env.PASS,
     }
-}
+});
 
-let transporter = nodemailer.createTransport(nodeConfig);
 
-let MailGenerator = new Mailgen({
+const MailGenerator = new Mailgen({
     theme: "default",
-    product : {
+    product: {
         name: "Mailgen",
         link: 'https://mailgen.js/'
     }
-})
-const sendMail = async (userEmail:string,username:string,otp:number) => {
+});
+
+const sendMail = async (email:string, username:string, otp:number) => {
    
-
-    var email = {
-        body : {
+    const emailTemplate = {
+        body: {
             name: username,
-            intro : `This the otp for your rollup signup ${otp}`,
-            outro: 'thanks!'
+            intro: `This is the OTP for your Rollup signup: ${otp}`,
+            outro: 'Thanks!'
         }
+    };
+
+    const emailBody = MailGenerator.generate(emailTemplate);
+
+    const message = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Signup OTP for Rollup Nutritions",
+        html: emailBody
+    };
+    try {
+         await transporter.sendMail(message);
+        
+        return { message: "Email sent successfully" };
+    } catch (error) {
+        console.error(`Error sending email: ${error}`);
+        return { error: "Something went wrong with sending the email" };
     }
+};
 
-    var emailBody = MailGenerator.generate(email);
-
-    let message = {
-        from : process.env.EMAIL,
-        to: userEmail,
-        subject : "Signup OTP for rollupntritions ",
-        html : emailBody
-    }
-
-    
-    transporter.sendMail(message)
-        .then(() => {
-           return {message:"email sent successfully"}
-        })
-        .catch((error)=>{return error ||"something went wrong with sending mail"})
-
-}
-export default sendMail
+export default sendMail;

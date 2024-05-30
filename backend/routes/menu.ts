@@ -25,7 +25,7 @@ router.get("/", async (req: Request, res: Response) => {
         res.status(201).json({menu})
     } catch (error) {
         res.status(403).json({ err: "something went wrong with getting menu items"+error })
-        console.error("Error fetching menu items:", error);
+        
       
     } finally {
         await disconnectPrisma();
@@ -42,7 +42,7 @@ router.get("/:id", authenticateJwt, async (req: Request, res: Response) => {
         res.status(201).json({menuItem})
     } catch (error) {
         res.status(403).json({ err: "something went wrong with getting menu item" })
-        console.error("Error fetching menu item:", error);
+     
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -69,7 +69,7 @@ router.post("/addItem", authenticateJwt, async (req: Request, res: Response) => 
         })
         res.status(201).json({ message: 'Item added successfully' });
     } catch (error) {
-        console.error("Error adding menu items:", error);
+     
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -99,7 +99,7 @@ router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
         res.status(201).json({ msg: "menuItem updated succesfully" })
 
     } catch (error) {
-        console.error("Error updating menu items:", error);
+        
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -107,7 +107,7 @@ router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
 })
 router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
     try {
-        console.log(req.headers['role'])
+       
         if (req.headers['role'] !== "admin") {
             res.status(403).json({ message: 'only admins can add items' });
             return
@@ -122,7 +122,7 @@ router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
         res.status(201).json({ msg: "menuItem deleted succesfully" })
 
     } catch (error) {
-        console.error("Error deleting menu items:", error);
+       
         handleInternalError(res);
     } finally {
         await disconnectPrisma();

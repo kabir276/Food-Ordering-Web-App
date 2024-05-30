@@ -79,7 +79,7 @@ router.post("/signup", async (req: Request, res: Response) => {
         await generateAndSendOtp(email, username);
         res.status(201).json({ message: 'User registered successfully' });
     } catch (e) {
-        console.error(e);
+       
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -102,7 +102,7 @@ router.post("/signin", async (req: Request, res: Response) => {
                 },
             });
         }
-        console.log(email)
+       
         const user = await prisma.user.findUnique({ where: { email: email } });
         if (!user) {
             throw new Error("No user Found, please sign up");
@@ -111,7 +111,7 @@ router.post("/signin", async (req: Request, res: Response) => {
         await generateAndSendOtp(email, user.name);
         res.status(201).json({ message: 'OTP sent successfully' });
     } catch (e) {
-        console.error(e);
+       
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -130,7 +130,6 @@ router.put("/resnd-otp", async (req: Request, res: Response) => {
 
     } catch (e) {
 
-        console.error(e);
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -139,9 +138,9 @@ router.put("/resnd-otp", async (req: Request, res: Response) => {
 router.post("/verify-otp", async (req: Request, res: Response) => {
     try {
 
-        console.log(req.body);
+     
         const { email, otp } = req.body;
-        console.log(email, otp);
+       
         const savedOtp = await prisma.otp.findFirst({
             where: {
                 email: email,
@@ -173,7 +172,7 @@ router.post("/verify-otp", async (req: Request, res: Response) => {
             res.status(401).json({ error: "Invalid OTP" });
         }
     } catch (e) {
-        console.error(e);
+       
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
@@ -198,7 +197,7 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
     }
     catch (error) {
         res.status(403).json({ err: "something went wrong with getting menu items" })
-        console.error("Error fetching menu items:", error);
+       
         handleInternalError(res);
     } finally {
         await disconnectPrisma();
