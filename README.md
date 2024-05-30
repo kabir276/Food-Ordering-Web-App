@@ -28,19 +28,32 @@ go
 Copy code
 food-app/
 ├── backend/
+
 │   ├── src/
+
 │   ├── Dockerfile
+
 │   ├── package.json
+
 │   └── ...
+
 ├── frontend/
+
 │   ├── pages/
+
 │   ├── components/
+
 │   ├── recoil/
+
 │   ├── package.json
+
 │   └── ...
+
 ├── .env.example
-├── docker-compose.yml
+
+
 └── ...
+
 Getting Started
 Prerequisites
 Make sure you have the following installed on your local machine:
